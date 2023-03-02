@@ -63,15 +63,27 @@ def create_rfm_df(df):
     return rfm_df
 
 # Gathering cleaned data
-all_df = pd.read_csv(".\data\all_data.csv")
+all_df = pd.read_csv("all_data.csv")
+
+datetime_columns = ["order_date", "delivery_date"]
+
+for column in datetime_columns:
+    all_df[column] = pd.to_datetime(all_df[column])
 
 # Filter data
 min_date = all_df["order_date"].min()
 max_date = all_df["order_date"].max()
 
 with st.sidebar:
-    start_date, end_date = st.date_input(label='Rentang Waktu',
-                                                min_value=min_date,
-                                                max_value=max_date,
-                                                value=[min_date, max_date])
+    # Menambahkan logo perusahaan
+    st.image("https://dicoding-web-img.sgp1.cdn.digitaloceanspaces.com/original/academy/dos:9d27eba5070ed41d56b8636af3248fb920230220172737.jpeg")
+    
+    
+    start_date, end_date = st.date_input(
+        label='Rentang Waktu',min_value=min_date,
+        max_value=max_date,
+        value=[min_date, max_date]
+    )
+
+
 
