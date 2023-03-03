@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 
-# Menyiapkan berbagai dataframe
+# Helper function yang dibutuhkan untuk menyiapkan berbagai dataframe
 def create_monthly_orders_df(df):
     monthly_orders_df = df.resample(rule='M', on='order_date').agg({
         "order_id": "nunique",
@@ -78,12 +78,21 @@ with st.sidebar:
     # Menambahkan logo perusahaan
     st.image("https://dicoding-web-img.sgp1.cdn.digitaloceanspaces.com/original/academy/dos:9d27eba5070ed41d56b8636af3248fb920230220172737.jpeg")
     
-    
+    # Mengambil start_date & end_date dari date_input
     start_date, end_date = st.date_input(
         label='Rentang Waktu',min_value=min_date,
         max_value=max_date,
         value=[min_date, max_date]
     )
 
+main_df = all_df[[(all_df["order_date"] >= start_date) & (all_df["order_date"] <= end_date)]]
+
+# Menyiapkan berbagai dataframe
+monthly_orders_df = create_monthly_orders_df(main_df)
+sum_order_items_df = create_sum_order_items_df(main_df)
+bygeder_df = create_bygeder_df(main_df)
+byage_df = create_byage_df(main_df)
+bystate_df = create_bystate_df(main_df)
+rfm_df = create_rfm_df(main_df)
 
 
