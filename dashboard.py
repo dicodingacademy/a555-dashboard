@@ -7,6 +7,7 @@ from babel.numbers import format_currency
 sns.set(style='dark')
 
 # Helper function yang dibutuhkan untuk menyiapkan berbagai dataframe
+
 # def create_monthly_orders_df(df):
 #     monthly_orders_df = df.resample(rule='M', on='order_date').agg({
 #         "order_id": "nunique",
@@ -94,7 +95,7 @@ max_date = all_df["order_date"].max()
 
 with st.sidebar:
     # Menambahkan logo perusahaan
-    st.image("https://dicoding-web-img.sgp1.cdn.digitaloceanspaces.com/original/academy/dos:9d27eba5070ed41d56b8636af3248fb920230220172737.jpeg")
+    st.image("https://github.com/dicodingacademy/assets/raw/main/logo.png")
     
     # Mengambil start_date & end_date dari date_input
     start_date, end_date = st.date_input(
