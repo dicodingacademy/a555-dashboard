@@ -8,20 +8,6 @@ sns.set(style='dark')
 
 # Helper function yang dibutuhkan untuk menyiapkan berbagai dataframe
 
-# def create_monthly_orders_df(df):
-#     monthly_orders_df = df.resample(rule='M', on='order_date').agg({
-#         "order_id": "nunique",
-#         "total_price": "sum"
-#     })
-#     monthly_orders_df.index = monthly_orders_df.index.strftime('%B') #mengubah format order date menjadi Tahun-Bulan
-#     monthly_orders_df = monthly_orders_df.reset_index()
-#     monthly_orders_df.rename(columns={
-#         "order_id": "order_count",
-#         "total_price": "revenue"
-#     }, inplace=True)
-    
-#     return monthly_orders_df
-
 def create_daily_orders_df(df):
     daily_orders_df = df.resample(rule='D', on='order_date').agg({
         "order_id": "nunique",
@@ -39,13 +25,13 @@ def create_sum_order_items_df(df):
     sum_order_items_df = df.groupby("product_name").quantity_x.sum().sort_values(ascending=False).reset_index()
     return sum_order_items_df
 
-def create_bygeder_df(df):
-    bygeder_df = df.groupby(by="gender").customer_id.nunique().reset_index()
-    bygeder_df.rename(columns={
+def create_bygender_df(df):
+    bygender_df = df.groupby(by="gender").customer_id.nunique().reset_index()
+    bygender_df.rename(columns={
         "customer_id": "customer_count"
     }, inplace=True)
     
-    return bygeder_df
+    return bygender_df
 
 def create_byage_df(df):
     byage_df = df.groupby(by="age_group").customer_id.nunique().reset_index()
@@ -79,7 +65,7 @@ def create_rfm_df(df):
     
     return rfm_df
 
-# Gathering cleaned data
+# Load cleaned data
 all_df = pd.read_csv("all_data.csv")
 
 datetime_columns = ["order_date", "delivery_date"]
@@ -104,9 +90,6 @@ with st.sidebar:
         value=[min_date, max_date]
     )
 
-# st.text(start_date)
-# st.text(end_date)
-
 main_df = all_df[(all_df["order_date"] >= str(start_date)) & 
                 (all_df["order_date"] <= str(end_date))]
 
@@ -115,14 +98,15 @@ main_df = all_df[(all_df["order_date"] >= str(start_date)) &
 # # Menyiapkan berbagai dataframe
 daily_orders_df = create_daily_orders_df(main_df)
 sum_order_items_df = create_sum_order_items_df(main_df)
-bygeder_df = create_bygeder_df(main_df)
+bygender_df = create_bygender_df(main_df)
 byage_df = create_byage_df(main_df)
 bystate_df = create_bystate_df(main_df)
 rfm_df = create_rfm_df(main_df)
 
 
 # plot number of daily orders (2021)
-st.header('Daily Orders')
+st.header('Dicoding Collection Dashboard :sparkles:')
+st.subheader('Daily Orders')
 
 col1, col2 = st.columns(2)
 
@@ -140,9 +124,8 @@ ax.plot(
     daily_orders_df["order_count"],
     marker='o', 
     linewidth=2,
-    color="#72BCD4"
+    color="#90CAF9"
 )
-# ax.set_title("Number of Daily Orders (2021)", loc="left", fontsize=25)
 ax.tick_params(axis='y', labelsize=20)
 ax.tick_params(axis='x', labelsize=15)
 
@@ -150,11 +133,11 @@ st.pyplot(fig)
 
 
 # Product performance
-st.header("Best & Worst Performing Product")
+st.subheader("Best & Worst Performing Product")
 
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(35, 15))
 
-colors = ["#72BCD4", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
+colors = ["#90CAF9", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
 
 sns.barplot(x="quantity_x", y="product_name", data=sum_order_items_df.head(5), palette=colors, ax=ax[0])
 ax[0].set_ylabel(None)
@@ -176,7 +159,7 @@ ax[1].tick_params(axis='x', labelsize=30)
 st.pyplot(fig)
 
 # customer demographic
-st.header("Customer Demographics")
+st.subheader("Customer Demographics")
 
 col1, col2 = st.columns(2)
 
@@ -186,24 +169,21 @@ with col1:
     sns.barplot(
         y="customer_count", 
         x="gender",
-        data=bygeder_df.sort_values(by="customer_count", ascending=False),
+        data=bygender_df.sort_values(by="customer_count", ascending=False),
         palette=colors,
         ax=ax
     )
     ax.set_title("Number of Customer by Gender", loc="center", fontsize=50)
     ax.set_ylabel(None)
     ax.set_xlabel(None)
-    # ax.tick_params(axis='both', labelsize=30)
     ax.tick_params(axis='x', labelsize=35)
     ax.tick_params(axis='y', labelsize=30)
-    # plt.tick_params(axis='x', labelsize=12)
-    # plt.show()
     st.pyplot(fig)
 
 with col2:
     fig, ax = plt.subplots(figsize=(20, 10))
     
-    colors = ["#D3D3D3", "#72BCD4", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
+    colors = ["#D3D3D3", "#90CAF9", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
 
     sns.barplot(
         y="customer_count", 
@@ -215,14 +195,12 @@ with col2:
     ax.set_title("Number of Customer by Age", loc="center", fontsize=50)
     ax.set_ylabel(None)
     ax.set_xlabel(None)
-    # ax.tick_params(axis='both', labelsize=30)
     ax.tick_params(axis='x', labelsize=35)
     ax.tick_params(axis='y', labelsize=30)
-    # plt.show()
     st.pyplot(fig)
 
 fig, ax = plt.subplots(figsize=(20, 10))
-colors = ["#72BCD4", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
+colors = ["#90CAF9", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3", "#D3D3D3"]
 sns.barplot(
     x="customer_count", 
     y="state",
@@ -239,24 +217,24 @@ st.pyplot(fig)
 
 
 # Best Customer Based on RFM Parameters
-st.header("Best Customer Based on RFM Parameters")
+st.subheader("Best Customer Based on RFM Parameters")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
     avg_recency = round(rfm_df.recency.mean(), 1)
-    st.metric("Avg Recency (days)", value=avg_recency)
+    st.metric("Average Recency (days)", value=avg_recency)
 
 with col2:
     avg_frequency = round(rfm_df.frequency.mean(), 2)
-    st.metric("Avg Frequency", value=avg_frequency)
+    st.metric("Average Frequency", value=avg_frequency)
 
 with col3:
     avg_frequency = format_currency(rfm_df.monetary.mean(), "AUD", locale='es_CO') 
-    st.metric("Avg Monetary", value=avg_frequency)
+    st.metric("Average Monetary", value=avg_frequency)
 
 fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(35, 15))
-colors = ["#72BCD4", "#72BCD4", "#72BCD4", "#72BCD4", "#72BCD4"]
+colors = ["#90CAF9", "#90CAF9", "#90CAF9", "#90CAF9", "#90CAF9"]
 
 sns.barplot(y="recency", x="customer_id", data=rfm_df.sort_values(by="recency", ascending=True).head(5), palette=colors, ax=ax[0])
 ax[0].set_ylabel(None)
@@ -280,3 +258,5 @@ ax[2].tick_params(axis='y', labelsize=30)
 ax[2].tick_params(axis='x', labelsize=35)
 
 st.pyplot(fig)
+
+st.caption('Copyright © Dicoding 2023')
