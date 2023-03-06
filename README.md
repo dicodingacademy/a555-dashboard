@@ -1,4 +1,4 @@
-# a555-dashboard
+# Dicoding Collection Dashboard ✨
 
 ## Setup environment
 ```
